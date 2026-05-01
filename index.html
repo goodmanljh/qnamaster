@@ -106,7 +106,7 @@
       };
 
       const contextDef = contextMap[scenario] || scenario;
-      const basePrompt = `당신은 주어진 상황의 대화 상대방입니다. 자연스러운 영어 질문(혹은 추가/후속 질문) 1개를 작성하고, 핵심 영어 단어/숙어(힌트) 3개를 제공해주세요.${excludeInstruction}\n각 힌트에 예문(example_en, example_ko) 포함.\n해당 질문에 대한 모범 답변을 [초중급, 중고급, 고급] 3가지 난이도로 작성.\n★매우 중요: 모범 답변 영문장 작성 시, 힌트가 쓰인 부분은 대괄호 두 개로 감싸주세요. (예: I [[kept in mind]] that...)`;
+      const basePrompt = `당신은 주어진 상황의 대화 상대방입니다. 자연스러운 영어 질문(혹은 추가/후속 질문) 1개를 작성하고, 핵심 영어 단어/숙어(힌트) 3개를 제공해주세요.${excludeInstruction}\n각 힌트에 예문(example_en, example_ko) 포함.\n해당 질문에 대한 모범 답변을 반드시 ["초중급", "중고급", "고급"] 3가지 난이도로 작성하고, JSON의 level 필드값으로 이 한글 명칭을 정확히 사용하세요.\n★매우 중요: 모범 답변 영문장 작성 시, 힌트가 쓰인 부분은 대괄호 두 개로 감싸주세요. (예: I [[kept in mind]] that...)`;
       
       let prompt = topicInput ? 
         `상황: ${scenario}\n상황의 성격 및 방향성: ${contextDef}\n대화/발표 주제: "${topicInput}".\n${basePrompt}` : 
@@ -297,18 +297,20 @@
         resetSelection();
       };
 
-      const handleStart = async (useRandom = false) => {
+      const handleStart = async (useRandom = false, keepHistory = false) => {
         const topicToUse = useRandom ? null : inputTopic;
         if (!useRandom && !inputTopic.trim()) return;
         
         setLoadingText('질문/답변 생성 중...');
         if (view === 'practice') setIsGeneratingNext(true);
-        setErrorMsg(''); setShowAnswer(false); setUsedHintsContext([]);
+        setErrorMsg(''); setShowAnswer(false);
+        if (!keepHistory) setUsedHintsContext([]);
 
         try {
-          const data = await generateQnA(scenario, topicToUse, []);
+          const currentHints = keepHistory ? usedHintsContext : [];
+          const data = await generateQnA(scenario, topicToUse, currentHints);
           setQData(data);
-          setUsedHintsContext(data.hints.map(h => h.en));
+          setUsedHintsContext(prev => keepHistory ? [...prev, ...data.hints.map(h => h.en)] : data.hints.map(h => h.en));
           if (useRandom) setInputTopic(data.topic);
           handleNavView('practice');
         } catch (error) { setErrorMsg(error.message || '오류 발생'); } 
@@ -539,7 +541,7 @@
                     <div className="grid grid-cols-2 gap-3 pt-4">
                       <button onClick={handleContinueTopic} disabled={isGeneratingNext} className="col-span-2 bg-[#4F46E5] hover:bg-indigo-600 text-white font-bold py-[14px] rounded-[16px] shadow-sm text-[15px] flex justify-center items-center gap-2"><RefreshIcon /> 계속 대화하기</button>
                       <button onClick={toggleSaveQnA} className={`flex justify-center items-center gap-2 font-bold py-[14px] rounded-[16px] text-[14px] border-[1.5px] ${isCurrentSaved ? 'bg-indigo-50 text-[#4F46E5] border-indigo-200' : 'bg-white dark:bg-slate-800 border-slate-200 text-[#374151] dark:text-slate-300'}`}><BookmarkIcon filled={isCurrentSaved} /> {isCurrentSaved ? '저장됨' : '저장하기'}</button>
-                      <button onClick={() => handleStart(true)} disabled={!!loadingText || isGeneratingNext} className="bg-white dark:bg-slate-800 border-[1.5px] border-slate-200 text-[#374151] dark:text-slate-300 font-bold py-[14px] rounded-[16px] flex justify-center items-center gap-2 text-[14px]"><ShuffleIcon /> 랜덤 질문</button>
+                      <button onClick={() => handleStart(true, true)} disabled={!!loadingText || isGeneratingNext} className="bg-white dark:bg-slate-800 border-[1.5px] border-slate-200 text-[#374151] dark:text-slate-300 font-bold py-[14px] rounded-[16px] flex justify-center items-center gap-2 text-[14px]"><ShuffleIcon /> 랜덤 질문</button>
                     </div>
                   </div>
                 )}

@@ -18,6 +18,8 @@
     /* Scrollbar Hide */
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    body { -ms-overflow-style: none; scrollbar-width: none; }
+    body::-webkit-scrollbar { display: none; }
   </style>
 </head>
 <body class="bg-[#F8FAFC] dark:bg-slate-950 transition-colors duration-200">
@@ -26,7 +28,6 @@
   <script type="text/babel">
     const { useState, useRef, useEffect } = React;
 
-    // 하드코딩된 API 키 제거
     const LOCAL_STORAGE_KEY = 'qna_master_data';
 
     const recommendedTopicsMap = {
@@ -66,7 +67,6 @@
     );
 
     const callGeminiAPI = async (promptConfig) => {
-      // 본인이 배포한 Deno url로 교체하세요. (예: https://my-worker.username.workers.dev)
       const workerUrl = "https://low-pheasant-40.goodmanljh.deno.net"; 
       
       const delays = [1000, 2000, 4000, 8000, 16000];
@@ -74,7 +74,6 @@
 
       for (let attempt = 0; attempt <= delays.length; attempt++) {
         try {
-          // 직접 Gemini URL이 아닌 Worker URL로 전송
           const response = await fetch(workerUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -207,13 +206,9 @@
 
     // --- Icons ---
     const AppLogoIcon = ({ className="w-9 h-9" }) => (
-      <svg viewBox="0 0 100 100" fill="none" className={className}>
-        <rect x="12" y="12" width="52" height="52" rx="14" fill="#6366F1"/>
-        <rect x="36" y="36" width="52" height="52" rx="14" fill="#06B6D4" fillOpacity="0.95"/>
-        <circle cx="36" cy="36" r="9" stroke="white" strokeWidth="4"/>
-        <path d="M41 41 L47 47" stroke="white" strokeWidth="4" strokeLinecap="round"/>
-        <path d="M62 48 L54 66 M62 48 L70 66 M57 60 L67 60" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      <div className={`flex items-center justify-center bg-indigo-50 dark:bg-indigo-900/30 rounded-[10px] shrink-0 ${className}`}>
+        <span className="text-[#4F46E5] dark:text-indigo-400 font-extrabold text-[22px]">A</span>
+      </div>
     );
     const RobotIllustration = ({ className="w-full h-full" }) => <svg viewBox="0 0 200 175" fill="none" className={className}><path d="M180 30 L183 38 L191 41 L183 44 L180 52 L177 44 L169 41 L177 38 Z" fill="#E0E7FF"/><path d="M20 130 L22 135 L30 137 L22 139 L20 145 L18 139 L10 137 L18 135 Z" fill="#E0E7FF"/><path d="M125 25 Q 125 5, 160 5 Q 195 5, 195 25 Q 195 45, 175 45 L 155 55 L 160 43 Q 125 45, 125 25 Z" fill="white" filter="drop-shadow(0px 4px 6px rgba(0,0,0,0.08))"/><text x="160" y="22" fontSize="12" fill="#4F46E5" fontWeight="bold" textAnchor="middle">Let's</text><text x="160" y="36" fontSize="12" fill="#4F46E5" fontWeight="bold" textAnchor="middle">talk!</text><path d="M40 100 A 45 45 0 0 1 140 100" stroke="#4F46E5" strokeWidth="10" strokeLinecap="round" fill="none" /><circle cx="90" cy="105" r="42" fill="url(#headGradient)" /><defs><radialGradient id="headGradient" cx="30%" cy="30%" r="70%"><stop offset="0%" stopColor="#ffffff" /><stop offset="80%" stopColor="#F1F5F9" /><stop offset="100%" stopColor="#CBD5E1" /></radialGradient><linearGradient id="faceGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#1E1B4B" /><stop offset="100%" stopColor="#0F172A" /></linearGradient></defs><rect x="62" y="90" width="56" height="32" rx="16" fill="url(#faceGradient)" /><circle cx="78" cy="102" r="3.5" fill="#2DD4BF" /><circle cx="102" cy="102" r="3.5" fill="#2DD4BF" /><path d="M82 112 Q 90 120 98 112" stroke="#2DD4BF" strokeWidth="3" strokeLinecap="round" fill="none" /><rect x="32" y="90" width="16" height="32" rx="8" fill="#4F46E5" /><rect x="132" y="90" width="16" height="32" rx="8" fill="#4F46E5" /><ellipse cx="90" cy="158" rx="35" ry="6" fill="rgba(0,0,0,0.06)" /></svg>;
     const SparkleIcon = ({ className="w-5 h-5" }) => <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}><path fillRule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5zM16.5 15a.75.75 0 01.712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 010 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 01-1.422 0l-.395-1.183a1.5 1.5 0 00-.948-.948l-1.183-.395a.75.75 0 010-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0116.5 15z" clipRule="evenodd" /></svg>;
@@ -417,7 +412,7 @@
       return (
         <div>
           <GradientDefs />
-          <div className="font-sans flex flex-col w-full h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
+          <div className="font-sans flex flex-col w-full h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200 overflow-hidden">
             
             <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-4 py-3 flex justify-between items-center shrink-0 border-b border-slate-100 dark:border-slate-800 z-10 w-full transition-colors duration-200 shadow-sm">
               <div className="flex items-center gap-2">
@@ -441,11 +436,11 @@
               </div>
             </div>
 
-            <div ref={scrollRef} className="overflow-y-auto flex-grow w-full md:max-w-2xl md:mx-auto px-4 py-4 md:px-3 scroll-smooth">
+            <div ref={scrollRef} className="overflow-y-auto hide-scrollbar flex-grow w-full md:max-w-2xl md:mx-auto px-4 py-4 md:px-3 scroll-smooth">
               {errorMsg && <div className="bg-red-50 dark:bg-red-900/30 text-red-600 p-4 rounded-xl text-sm mb-6 border border-red-200 shadow-sm">{errorMsg}</div>}
 
               {view === 'setup' && (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
                   <div className="flex justify-between items-center pt-2 pb-1">
                     <h2 className="text-[21.5px] font-extrabold text-[#111827] dark:text-slate-100 leading-[1.35] tracking-tight">오늘, 어떤 상황에서<br/><span className="text-[#4F46E5] dark:text-indigo-400">영어로 말해볼까요?</span></h2>
                     <div className="w-[100px] h-[85px] shrink-0 mr-[-5px] mt-[-10px]"><RobotIllustration /></div>
@@ -506,7 +501,7 @@
               )}
 
               {view === 'practice' && qData && (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
                   <div className="flex flex-col gap-1.5 ml-1 mt-1 mb-2">
                     <span className="text-[13px] text-slate-500 font-medium">상황: {scenario}</span>
                     <div className="bg-[#EEF2FF] dark:bg-indigo-900/20 py-2 px-4 rounded-[12px] border border-[#E0E7FF] w-fit">
@@ -565,7 +560,7 @@
               )}
 
               {view === 'saved' && (
-                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
                   <h2 className="text-xl font-bold text-[#111827] dark:text-slate-200 px-1">저장함</h2>
                   
                   <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-[14px]">
@@ -647,7 +642,7 @@
               <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4">
                 <div className="bg-white dark:bg-slate-800 w-full max-w-sm rounded-[24px] shadow-2xl overflow-hidden animate-in zoom-in-95 border border-slate-200 flex flex-col max-h-[85vh]">
                   <div className="bg-[#4F46E5] dark:bg-slate-900 p-4 flex justify-between items-center text-white shrink-0"><span className="font-bold text-[15px] flex items-center gap-2"><LightbulbIcon /> 표현 학습</span><button onClick={() => setFlashcard(null)} className="p-1 bg-white/20 rounded-full"><CloseIcon /></button></div>
-                  <div className="py-8 px-5 overflow-y-auto grow">
+                  <div className="py-8 px-5 overflow-y-auto hide-scrollbar grow">
                     <div className="text-center mb-8"><h3 className="text-[28px] font-extrabold text-[#111827] dark:text-slate-100 mb-2.5">{flashcard.en}</h3><p className="text-[16px] text-[#4F46E5] font-bold">{flashcard.ko.replace(/\[\[|\]\]/g, '')}</p></div>
                     <div className="space-y-4 mb-8">
                       <div className="bg-[#F9FAFB] dark:bg-slate-900 p-[20px] rounded-[16px] border border-slate-100 dark:border-slate-700">

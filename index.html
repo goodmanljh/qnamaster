@@ -18,6 +18,7 @@
     /* Scrollbar Hide */
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    body { overflow: hidden; /* 모바일 브라우저 기본 스크롤 방지 */ }
   </style>
 </head>
 <body class="bg-[#F8FAFC] dark:bg-slate-950 transition-colors duration-200">
@@ -468,7 +469,7 @@
       return (
         <div>
           <GradientDefs />
-          <div className="font-sans flex flex-col w-full h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
+          <div className="font-sans flex flex-col w-full h-screen overflow-hidden bg-[#F8FAFC] dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
             
             <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-4 py-3 flex justify-between items-center shrink-0 border-b border-slate-100 dark:border-slate-800 z-10 w-full transition-colors duration-200 shadow-sm">
               <div className="flex items-center gap-2">
@@ -492,7 +493,7 @@
               </div>
             </div>
 
-            <div ref={scrollRef} className="overflow-y-auto flex-grow w-full md:max-w-2xl md:mx-auto px-4 py-4 md:px-3 scroll-smooth">
+            <div ref={scrollRef} className="overflow-y-auto hide-scrollbar flex-grow w-full md:max-w-2xl md:mx-auto px-4 py-4 md:px-3 scroll-smooth">
               {errorMsg && <div className="bg-red-50 dark:bg-red-900/30 text-red-600 p-4 rounded-xl text-sm mb-6 border border-red-200 shadow-sm">{errorMsg}</div>}
 
               {view === 'setup' && (
@@ -584,14 +585,26 @@
                   </div>
 
                   {!showAnswer ? (
-                    <button onClick={() => setShowAnswer(true)} className="w-full bg-[#111827] hover:bg-[#1F2937] dark:bg-slate-700 text-white font-bold py-4 rounded-[16px] shadow-sm mt-2 text-[15px]">수준별 모범 답안 확인하기</button>
+                    <button 
+                      onClick={() => setShowAnswer(true)} 
+                      disabled={isGeneratingAnswers}
+                      className={`w-full font-bold py-4 rounded-[16px] shadow-sm mt-2 text-[15px] transition-all duration-300 ${isGeneratingAnswers ? 'bg-[#EEF2FF] dark:bg-indigo-900/40 text-[#4F46E5] dark:text-indigo-400 cursor-wait border border-[#E0E7FF] dark:border-indigo-800/50' : 'bg-[#111827] hover:bg-[#1F2937] dark:bg-slate-700 text-white'}`}
+                    >
+                      {isGeneratingAnswers ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <LoaderIcon className="w-5 h-5 animate-spin" /> 모범 답안을 미리 준비하고 있어요...
+                        </span>
+                      ) : (
+                        "수준별 모범 답안 확인하기"
+                      )}
+                    </button>
                   ) : (
                     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 pt-2">
                       <h3 className="font-bold text-[18px] text-[#111827] dark:text-slate-200 mb-4 ml-1">모범 답안</h3>
                       {isGeneratingAnswers || !qData.answers || qData.answers.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-8 gap-3 bg-white dark:bg-slate-800 border-[1.5px] border-slate-200 dark:border-slate-700 rounded-[20px]">
                           <LoaderIcon className="animate-spin w-8 h-8 text-[#4F46E5]" />
-                          <span className="text-[14px] font-medium text-slate-500">답변을 생성하고 있습니다...</span>
+                          <span className="text-[14px] font-medium text-slate-500">답변을 마저 생성하고 있습니다...</span>
                         </div>
                       ) : (
                         <div className="space-y-4">
@@ -705,7 +718,7 @@
               <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4">
                 <div className="bg-white dark:bg-slate-800 w-full max-w-sm rounded-[24px] shadow-2xl overflow-hidden animate-in zoom-in-95 border border-slate-200 flex flex-col max-h-[85vh]">
                   <div className="bg-[#4F46E5] dark:bg-slate-900 p-4 flex justify-between items-center text-white shrink-0"><span className="font-bold text-[15px] flex items-center gap-2"><LightbulbIcon /> 표현 학습</span><button onClick={() => setFlashcard(null)} className="p-1 bg-white/20 rounded-full"><CloseIcon /></button></div>
-                  <div className="py-8 px-5 overflow-y-auto grow">
+                  <div className="py-8 px-5 overflow-y-auto hide-scrollbar grow">
                     <div className="text-center mb-8"><h3 className="text-[28px] font-extrabold text-[#111827] dark:text-slate-100 mb-2.5">{flashcard.en}</h3><p className="text-[16px] text-[#4F46E5] font-bold">{flashcard.ko.replace(/\[\[|\]\]/g, '')}</p></div>
                     <div className="space-y-4 mb-8">
                       <div className="bg-[#F9FAFB] dark:bg-slate-900 p-[20px] rounded-[16px] border border-slate-100 dark:border-slate-700">
